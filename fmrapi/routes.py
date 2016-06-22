@@ -4,13 +4,15 @@ from fmrapi import app, database, fn
 from urllib import unquote
 
 
-@app.route('/<table_name>', defaults={'limit': 0},
-           methods=['GET', 'POST', 'DELETE'])
-@app.route('/<table_name>/<int:limit>',
-           methods=['GET', 'POST', 'DELETE'])
+@app.route('/<table_name>', methods=['GET', 'POST', 'DELETE'])
 @fn.format_response
-def table_acts(table_name, limit):
+def table_acts(table_name):
     collection = database[table_name]
+
+    try:
+        limit = int(request.args.get('limit'))
+    except:
+        limit = 0
 
     if request.method == 'GET':
         items, msg = fn.fetch_items(collection, limit=limit)

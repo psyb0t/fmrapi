@@ -1,6 +1,6 @@
-import json
 from bson import ObjectId
 from functools import wraps
+from flask import jsonify
 
 
 def format_response(fn):
@@ -8,11 +8,14 @@ def format_response(fn):
     def _fr(*args, **kwargs):
         ret_data = fn(*args, **kwargs)
 
-        return json.dumps({
+        r = jsonify({
             'status': ret_data.get('status'),
             'msg': ret_data.get('msg'),
             'data': ret_data.get('data')
-        }), ret_data.get('code', 200)
+        })
+        r.status_code = ret_data.get('code', 200)
+
+        return r
 
     return _fr
 
